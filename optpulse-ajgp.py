@@ -5,10 +5,10 @@ from qutip import *
 import qutip.control.pulseoptim as cpo
 np.random.seed(3)
 
-def get_amp(t, amps, times):
+def get_amp_center(t, amps, times):
     """
     This is the func as it is implemented in
-    `qutip.rhs_generrate._td_wrap_array_str`
+    `qutip.rhs_generate._td_wrap_array_str`
     """
     n_t = len(times)
     t_f = times[-1]
@@ -16,6 +16,18 @@ def get_amp(t, amps, times):
         return 0.0
     else:
         return amps[int(round((n_t-1)*t/t_f))]
+
+def get_amp_start(t, amps, times):
+    """
+    This is the func as it is implemented in
+    `qutip.rhs_generate._td_wrap_array_str`
+    """
+    n_t = len(times)
+    t_f = times[-1]
+    if t > t_f:
+        return 0.0
+    else:
+        return amps[int(np.floor((n_t-1)*t/t_f))]
 
 # Setup
 N = 1
@@ -47,13 +59,31 @@ print("qtrl_amps:", qtrl_amps)
 finetimes = np.arange(0, evo_time, 0.1)
 
 
-amps = np.append(qtrl_amps, 10)
+amps = np.append(qtrl_amps, qtrl_amps[-1])
 for t in finetimes:
-    print("t: {}, amps: {}".format(t, get_amp(t, amps, tlist)))
+    print("t: {}, amp_center: {}, , amp_start: {}".format(t,
+                                        get_amp_center(t, amps, tlist),
+                                        get_amp_start(t, amps, tlist)))
+
+
+def get_amp_td_func(t, args):
+    """
+    This is the func as it is implemented in
+    `qutip.rhs_generate._td_wrap_array_str`
+    """
+    times = args['times']
+    amps = args['amps']
+    n_t = len(times)
+    t_f = times[-1]
+    if t > t_f:
+        return 0.0
+    else:
+        return amps[int(np.floor((n_t-1)*t/t_f))]
 
 #amps = np.insert(qtrl_amps, 0, qtrl_amps[0])
-H = [H_d, [H_c[0], amps]]
-result = mesolve(H, basis(2,0), tlist, options=Options(store_final_state=True))
+H = [H_d, [H_c[0], get_amp_td_func]]
+result = mesolve(H, basis(2,0), tlist, args={'times': tlist, 'amps': amps},
+                 options=Options(store_final_state=True))
 plus_state = (basis(2,0)+ basis(2,1)).unit()
 
 print("Num states: ", len(result.states))
