@@ -1,0 +1,5 @@
+- [ ] An overview of the project without too many technical details
+- [ ] Create a qip_opt branch and apply the changes
+- [ ] Combining two coefficients with different tlist in QobjEvo
+- [ ] Example of noise on a simple qubit circuit
+- [ ] Blog about git commands
