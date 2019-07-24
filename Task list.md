@@ -1,8 +1,8 @@
 High priority
 - [ ] An overview of the project without too many technical details
-- [ ] Create a qip_opt branch and apply the changes
-- [x] Combining two coefficients with different tlist in QobjEvo
-- [ ] Example of noise on a simple qubit circuit
+- [x] Create a qip_opt branch and apply the changes
+- [ ] Combining two coefficients with different tlist in QobjEvo
+- [x] Example of noise on a simple qubit circuit
 
 Low priority
 - [ ] Blog about git commands
